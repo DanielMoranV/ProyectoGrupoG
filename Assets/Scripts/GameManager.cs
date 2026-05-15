@@ -48,8 +48,17 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        gameOverPanel.SetActive(true);
         Time.timeScale = 0;
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+            Debug.Log("GameOver: panel activado correctamente");
+        }
+        else
+        {
+            Debug.LogError("GameOver: gameOverPanel es NULL, asígnalo en el Inspector");
+        }
     }
 
     public void RestartGame()
