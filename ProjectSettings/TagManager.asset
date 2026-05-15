@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Objetivo
+  - Wall
+  - Food
+  - Body
   layers:
   - Default
   - TransparentFX
