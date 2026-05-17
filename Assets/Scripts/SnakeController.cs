@@ -12,10 +12,12 @@ public class SnakeController : MonoBehaviour
     public GameObject efectoParticulas;
 
     private List<GameObject> bodyParts = new List<GameObject>();
+    private List<Collider> bodyPhysicsColliders = new List<Collider>();
     private List<Vector3> positionsHistory = new List<Vector3>();
     private List<Quaternion> rotationsHistory = new List<Quaternion>();
 
     private FoodSpawner spawner;
+    private Collider headCollider;
     private float canDieTimer = 1f;
     private float distanceSinceLastRecord = 0f;
     private float recordStep;
@@ -26,8 +28,8 @@ public class SnakeController : MonoBehaviour
 
         positionsHistory.Add(transform.position);
         rotationsHistory.Add(transform.rotation);
-        // Actualizado para evitar el warning CS0618
         spawner = Object.FindFirstObjectByType<FoodSpawner>();
+        headCollider = GetComponent<Collider>();
 
         if (spawner == null) Debug.LogError("FoodSpawner no encontrado!");
     }
@@ -58,6 +60,10 @@ public class SnakeController : MonoBehaviour
             Vector3 moveDirection = point - body.transform.position;
             body.transform.position += moveDirection * bodySpeed * Time.deltaTime;
             body.transform.rotation = rotationsHistory[histIndex];
+
+            if (index < bodyPhysicsColliders.Count)
+                ResolveBodyWallPenetration(body, bodyPhysicsColliders[index]);
+
             index++;
         }
 
@@ -77,6 +83,23 @@ public class SnakeController : MonoBehaviour
         int histIndex = Mathf.Min(bodyParts.Count * gap, positionsHistory.Count - 1);
         GameObject body = Instantiate(bodyPrefab, positionsHistory[histIndex], rotationsHistory[histIndex]);
         bodyParts.Add(body);
+
+        // Añadir un BoxCollider no-trigger para depenetración física con muros.
+        // El trigger original sigue siendo el que detecta colisiones de juego (Body, Food, etc).
+        BoxCollider triggerCol = body.GetComponent<BoxCollider>();
+        BoxCollider physCol = body.AddComponent<BoxCollider>();
+        if (triggerCol != null)
+        {
+            physCol.center = triggerCol.center;
+            physCol.size = triggerCol.size;
+        }
+        physCol.isTrigger = false;
+
+        // Evitar que la cabeza sea bloqueada físicamente por este collider
+        if (headCollider != null)
+            Physics.IgnoreCollision(headCollider, physCol);
+
+        bodyPhysicsColliders.Add(physCol);
 
         moveSpeed += speedIncrease;
         bodySpeed += speedIncrease;
@@ -101,7 +124,6 @@ public class SnakeController : MonoBehaviour
             if (efectoParticulas != null)
             {
                 GameObject particulas = Instantiate(efectoParticulas, position, Quaternion.identity);
-                // Destruir las partículas después de 2 segundos para no llenar la memoria
                 Destroy(particulas, 2f);
             }
             if (spawner != null) spawner.SpawnFood();
@@ -126,5 +148,31 @@ public class SnakeController : MonoBehaviour
     public List<GameObject> GetBodyParts()
     {
         return bodyParts;
+    }
+
+    private void ResolveBodyWallPenetration(GameObject body, Collider physCol)
+    {
+        Collider[] overlaps = Physics.OverlapBox(
+            physCol.bounds.center,
+            physCol.bounds.extents + Vector3.one * 0.1f,
+            body.transform.rotation,
+            ~0,
+            QueryTriggerInteraction.Ignore
+        );
+
+        foreach (var wall in overlaps)
+        {
+            if (!wall.CompareTag("Wall") || wall.gameObject == body) continue;
+
+            Vector3 dir;
+            float dist;
+            if (Physics.ComputePenetration(
+                    physCol, body.transform.position, body.transform.rotation,
+                    wall, wall.transform.position, wall.transform.rotation,
+                    out dir, out dist))
+            {
+                body.transform.position += dir * (dist + 0.02f);
+            }
+        }
     }
 }
