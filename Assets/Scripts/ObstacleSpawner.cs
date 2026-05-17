@@ -9,11 +9,14 @@ public class ObstacleSpawner : MonoBehaviour
 
     public float minDistanceFromSnake = 2f;
     public float minDistanceFromObstacle = 1.5f;
+    public int maxObstacles = 20;
 
     private List<GameObject> obstacles = new List<GameObject>();
 
     public void SpawnObstacle()
     {
+        if (obstacles.Count >= maxObstacles) return;
+
         Vector3 spawnPos;
         bool validPosition = false;
         int attempts = 0;
@@ -33,9 +36,11 @@ public class ObstacleSpawner : MonoBehaviour
         if (validPosition)
         {
             GameObject obstacle = Instantiate(obstaclePrefab, spawnPos, Quaternion.identity);
-            obstacle.tag = "Obstacle";
+            obstacle.tag = "Wall";
             obstacles.Add(obstacle);
         }
+        else
+            Debug.LogWarning("ObstacleSpawner: no se encontró posición válida tras 100 intentos.");
     }
 
     public bool IsPositionValid(Vector3 pos)

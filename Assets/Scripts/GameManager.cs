@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // ... rest of start remains same
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
         else

@@ -9,6 +9,7 @@ public class SnakeController : MonoBehaviour
     public float segmentSpacing = 1.1f;
     public int gap = 10;
     public GameObject bodyPrefab;
+    public GameObject efectoParticulas;
 
     private List<GameObject> bodyParts = new List<GameObject>();
     private List<Vector3> positionsHistory = new List<Vector3>();
@@ -96,6 +97,13 @@ public class SnakeController : MonoBehaviour
         {
             Grow();
             Destroy(other.gameObject);
+            Vector3 position = other.transform.position;
+            if (efectoParticulas != null)
+            {
+                GameObject particulas = Instantiate(efectoParticulas, position, Quaternion.identity);
+                // Destruir las partículas después de 2 segundos para no llenar la memoria
+                Destroy(particulas, 2f);
+            }
             if (spawner != null) spawner.SpawnFood();
             if (GameManager.Instance != null) GameManager.Instance.AddScore();
         }

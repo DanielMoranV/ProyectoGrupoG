@@ -32,9 +32,9 @@ public class FoodSpawner : MonoBehaviour
         } while (!validPosition && attempts < 100);
 
         if (validPosition)
-        {
             Instantiate(foodPrefab, spawnPos, Quaternion.identity);
-        }
+        else
+            Debug.LogWarning("FoodSpawner: no se encontró posición válida tras 100 intentos.");
     }
 
     bool IsPositionValid(Vector3 pos)
