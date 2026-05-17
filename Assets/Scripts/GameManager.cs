@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 
     public GameObject gameOverPanel;
     public TextMeshProUGUI scoreText;
+    public ObstacleSpawner obstacleSpawner;
+
     private int score = 0;
 
     void Awake()
@@ -38,6 +40,14 @@ public class GameManager : MonoBehaviour
     {
         score++;
         UpdateScoreUI();
+
+        if (score % 5 == 0)
+        {
+            if (obstacleSpawner != null)
+                obstacleSpawner.SpawnObstacle();
+            else
+                Debug.LogWarning("ObstacleSpawner no asignado en el GameManager");
+        }
     }
 
     void UpdateScoreUI()

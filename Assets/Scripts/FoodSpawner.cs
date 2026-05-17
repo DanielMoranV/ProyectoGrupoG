@@ -5,6 +5,10 @@ public class FoodSpawner : MonoBehaviour
     public GameObject foodPrefab;
     public Vector2 boardSize = new Vector2(9, 9); // Assuming a 20x20 plane centered at 0,0
     public SnakeController snake;
+    public ObstacleSpawner obstacleSpawner;
+
+    public float minDistanceFromSnake = 1f;
+    public float minDistanceFromObstacle = 1.5f;
 
     void Start()
     {
@@ -35,13 +39,23 @@ public class FoodSpawner : MonoBehaviour
 
     bool IsPositionValid(Vector3 pos)
     {
-        // Check distance to head
-        if (Vector3.Distance(pos, snake.transform.position) < 1f) return false;
-
-        // Check distance to body parts
-        foreach (var body in snake.GetBodyParts())
+         if (snake != null)
         {
-            if (Vector3.Distance(pos, body.transform.position) < 1f) return false;
+            if (Vector3.Distance(pos, snake.transform.position) < minDistanceFromSnake) return false;
+
+            foreach (var body in snake.GetBodyParts())
+            {
+                if (Vector3.Distance(pos, body.transform.position) < minDistanceFromSnake) return false;
+            }
+        }
+
+        if (obstacleSpawner != null)
+        {
+            foreach (var obstacle in obstacleSpawner.GetObstacles())
+            {
+                if (Vector3.Distance(pos, obstacle.transform.position) < minDistanceFromObstacle)
+                    return false;
+            }
         }
 
         return true;

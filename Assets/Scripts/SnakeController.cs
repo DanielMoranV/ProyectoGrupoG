@@ -68,11 +68,21 @@ public class SnakeController : MonoBehaviour
         }
     }
 
+    public float speedIncrease = 0.8f;
+    public float maxMoveSpeed = 12f;
+
     public void Grow()
     {
         int histIndex = Mathf.Min(bodyParts.Count * gap, positionsHistory.Count - 1);
         GameObject body = Instantiate(bodyPrefab, positionsHistory[histIndex], rotationsHistory[histIndex]);
         bodyParts.Add(body);
+
+        moveSpeed += speedIncrease;
+        bodySpeed += speedIncrease;
+
+        moveSpeed = Mathf.Min(moveSpeed, maxMoveSpeed);
+        bodySpeed = Mathf.Min(bodySpeed, maxMoveSpeed);
+
         canDieTimer = 1f;
     }
 
