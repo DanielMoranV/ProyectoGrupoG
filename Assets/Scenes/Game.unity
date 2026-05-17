@@ -1314,7 +1314,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 90751d9503a9d6442bc94efe0bbd8421, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1380,6 +1380,7 @@ MonoBehaviour:
   segmentSpacing: 0.8
   gap: 10
   bodyPrefab: {fileID: 8933368173933678291, guid: acd8b24cd1fce3c4f907adce10460aef, type: 3}
+  efectoParticulas: {fileID: 1910487456492518998, guid: 73a2aea81ba26e84c9403a3dbd5f004c, type: 3}
   speedIncrease: 0.8
   maxMoveSpeed: 12
 --- !u!1 &832575517
@@ -2468,6 +2469,7 @@ MonoBehaviour:
   snake: {fileID: 745737406}
   minDistanceFromSnake: 2
   minDistanceFromObstacle: 1.5
+  maxObstacles: 20
 --- !u!4 &2073959741
 Transform:
   m_ObjectHideFlags: 0
